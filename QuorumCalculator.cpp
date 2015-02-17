@@ -15,6 +15,7 @@ typedef std::map<std::string, int> STR_INT_MAP;
 //definitons
 void process_csv(std::istream&, STR_DOUBLE_VEC&);
 void usage(std::ostream&,std::string);
+void output_data(int);
 
 //main
 int main(int argc, char* argv[]) {
@@ -56,23 +57,15 @@ int main(int argc, char* argv[]) {
             attendance_record[contents[x][y]]++;
         }
     }
-    int index = 0;
+    int count = 0;
     for(STR_INT_MAP::const_iterator itr = attendance_record.begin(); itr != attendance_record.end(); ++itr) {
         if(itr->second >= num_meetings) {
             std::cout << itr->first <<  " (" << itr->second << ")" << std::endl;
-            ++index;
+            ++count;
         }
     }
     
-    std::cout << std::endl;
-
-    if(index > 0) {
-        std::cout << "A total of " << index << " members qualify to vote." << std::endl;
-        std::cout << std::setw(28) << std::left << "Simple majority (.51)"     << ceil((float)index*.51) << " / " << index << std::endl;
-        std::cout << std::setw(28) << std::left <<  "Two-thirds majority (2/3)" << ceil((float)index*(2/(float)3)) << " / " << index << std::endl;
-    } else {
-        std::cout << "No members qualify to vote." << std::endl;
-    }
+    output_data(count);
     
     return 0;
 }
@@ -94,5 +87,17 @@ void process_csv(std::istream& in_str, STR_DOUBLE_VEC& contents) {
             t.push_back(cell);
 
         contents.push_back(t);
+    }
+}
+
+void output_data(int count) {
+    std::cout << std::endl;
+
+    if(count > 0) {
+        std::cout << "A total of " << count << " members qualify to vote." << std::endl;
+        std::cout << std::setw(28) << std::left << "Simple majority (.51)"     << ceil((float)count*.51) << " / " << count << std::endl;
+        std::cout << std::setw(28) << std::left <<  "Two-thirds majority (2/3)" << ceil((float)count*(2/(float)3)) << " / " << count << std::endl;
+    } else {
+        std::cout << "No members qualify to vote." << std::endl;
     }
 }
