@@ -9,71 +9,65 @@
 #include <iomanip>
 
 //typedefs
-typedef std::vector<std::vector<std::string> > STR_DOUBLE_VEC;
-typedef std::map<std::string, int> STR_INT_MAP;
+typedef std::vector<std::vector<std::string> > STR_DOUBLE_VEC; //for the parsing
+typedef std::map<std::string, int> STR_INT_MAP; //for the processed data
 
 //definitons
-void process_csv(std::istream&, STR_DOUBLE_VEC&);
-void usage(std::ostream&,std::string);
-void output_data(int);
+void process_csv(std::istream&, STR_DOUBLE_VEC&); //processes the data provided
+void usage(std::ostream&, std::string, std::string=""); //in the event program fails, print usage
+void output_data(std::ostream&, const STR_INT_MAP&, int); //output the results
 
 //main
 int main(int argc, char* argv[]) {
-    if(argc < 3) {
+    if(argc < 3) { //not enough arguments provided
         usage(std::cerr, argv[0]);
         return 1;
     }
 
-    std::ifstream file_stream(argv[1]);
+    std::ifstream file_stream(argv[1]); //load the file provided
 
-    if(!file_stream.good()) {
-        std::cerr << "Your file is invalid!" << std::endl;
-        usage(std::cerr, argv[0]);
+    if(!file_stream.good()) { //if the file is not valid
+        usage(std::cerr, argv[0], "Your file is invalid!");
         return 1;
     }
 
-    if(atoi(argv[2]) == 0) {
-        std::cerr << "You haven't specified a valid number of meetings! (> 0)" << std::endl;
-        usage(std::cerr, argv[0]);
+    if(atoi(argv[2]) == 0) { //if the num of meetings is either 0 or NaN
+        usage(std::cerr, argv[0], "You haven't specified a valid number of meetings! (> 0)");
         return 1;
     }
 
-    int num_meetings = atoi(argv[2]);
+    int num_meetings = atoi(argv[2]); //otherwise, set it to that number
+    //num to pool is how many attendance lists to count from
     int num_to_pool = (argc >= 4) ? atoi(argv[3]) : num_meetings;
-    if(num_to_pool < num_meetings) {
-        std::cerr << "Your number to pool from must be greater than the number of needed meetings!" << std::endl;
-        usage(std::cerr, argv[0]);
+    if(num_to_pool < num_meetings) { //if the number of meetings is unreachable
+        usage(std::cerr, argv[0], "Your number to pool from must be greater than the number of needed meetings!");
         return 1;
     }
 
-    STR_DOUBLE_VEC contents;
-    STR_INT_MAP attendance_record;
+    STR_DOUBLE_VEC contents; //to store the soon-to-be-parsed data
+    STR_INT_MAP attendance_record; //to track attendance record
 
-    process_csv(file_stream, contents);
+    process_csv(file_stream, contents); //get the data processed
     
+    //figure out where to start in the file
     int x = (contents.size()-num_to_pool <= 0) ? 0 : contents.size()-num_to_pool;
-    for(; x<contents.size(); x++) {
+    for(; x<contents.size(); x++) { //crawl the vector and count attendance
         for(int y=0; y<contents[x].size(); y++) {
             attendance_record[contents[x][y]]++;
         }
     }
-    int count = 0;
-    for(STR_INT_MAP::const_iterator itr = attendance_record.begin(); itr != attendance_record.end(); ++itr) {
-        if(itr->second >= num_meetings) {
-            std::cout << itr->first <<  " (" << itr->second << ")" << std::endl;
-            ++count;
-        }
-    }
     
-    output_data(count);
+    output_data(std::cout, attendance_record, num_meetings); //output the results, giving 
     
     return 0;
 }
 
 //functions
-void usage(std::ostream& out, std::string exe_name) {
-    out << "USAGE: " << std::endl;
-    out << exe_name << " <file name> <number of meetings> [meetings to pool]" << std::endl;
+void usage(std::ostream& out, std::string exe_name, std::string custom_error) {
+    out << std::endl;
+    if(custom_error != "") out << custom_error << std::endl;
+    out << "USAGE: " << exe_name << " <file name> <number of meetings> [meetings to pool]" << std::endl;
+    out << std::endl;
 }
 
 void process_csv(std::istream& in_str, STR_DOUBLE_VEC& contents) {
@@ -90,14 +84,25 @@ void process_csv(std::istream& in_str, STR_DOUBLE_VEC& contents) {
     }
 }
 
-void output_data(int count) {
-    std::cout << std::endl;
-
-    if(count > 0) {
-        std::cout << "A total of " << count << " members qualify to vote." << std::endl;
-        std::cout << std::setw(28) << std::left << "Simple majority (.51)"     << ceil((float)count*.51) << " / " << count << std::endl;
-        std::cout << std::setw(28) << std::left <<  "Two-thirds majority (2/3)" << ceil((float)count*(2/(float)3)) << " / " << count << std::endl;
-    } else {
-        std::cout << "No members qualify to vote." << std::endl;
+void output_data(std::ostream& out, const STR_INT_MAP& attendance_record, int num_meetings) {
+    int count = 0; //counter of total valid voting membership
+    //print the results (only those who qualify to vote)
+    for(STR_INT_MAP::const_iterator itr = attendance_record.begin(); itr != attendance_record.end(); ++itr) {
+        if(itr->second >= num_meetings) {
+            //print the member and number of meetings attended in pool range
+            out << itr->first <<  " (" << itr->second << ")" << std::endl;
+            ++count;
+        }
     }
+
+    out << std::endl;
+
+    if(count <= 0){
+        out << "No members qualify to vote." << std::endl;
+        return;
+    }
+
+    out << "A total of " << count << " members qualify to vote." << std::endl;
+    out << std::setw(28) << std::left << "Simple majority (.51)"     << ceil((float)count*.51) << " / " << count << std::endl;
+    out << std::setw(28) << std::left <<  "Two-thirds majority (2/3)" << ceil((float)count*(2/(float)3)) << " / " << count << std::endl;
 }
