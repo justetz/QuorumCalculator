@@ -1,7 +1,11 @@
 # QuorumCalculator
 
 ## Description
-Allows a club to input a CSV file and determine which of their members are currently considered voting members.
+Allows a club to input a CSV file and determine which of their members are currently considered voting members. The program is written in C++.
+
+### For Deployment
+Download the .cpp file, compile it into and executable, and run the program using the following usage guidelines:
+`./executable_name <file name> <number of meetings> [meetings to pool]`
 
 ## Expected CSV File
 The program (currently) assumes that the input follows a format of the following:
