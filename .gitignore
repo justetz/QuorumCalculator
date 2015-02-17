@@ -25,3 +25,4 @@ TestResults/
 *.dll.config
 *.cache
 *.suo
+*.csv
