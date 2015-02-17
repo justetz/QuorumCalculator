@@ -1,11 +1,16 @@
+#include <vector>
+#include <string>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 
-typedef std::vector<std::vector<std::string>> STR_DOUBLE_VEC;
+typedef std::vector<std::vector<std::string> > STR_DOUBLE_VEC;
 
 //definitons
 void get_next_line(std::istream& in_str, std::vector<std::string>& contents);
 
 //main
-int main(int argc, char* argc[]) {
+int main(int argc, char* argv[]) {
 	STR_DOUBLE_VEC contents;
 }
 
@@ -15,9 +20,10 @@ void get_next_line(std::istream& in_str, STR_DOUBLE_VEC& contents) {
     std::getline(in_str, line);
 
     std::stringstream line_stream(line);
-    std::vector t;
-    contents.push_back(t);
+    std::vector<std::string> t;
 
-    while(std::getline(lineStream,cell,','))
-        contents.push_back(cell);
+    while(std::getline(line_stream,cell,','))
+        t.push_back(cell);
+
+	contents.push_back(t);
 }
