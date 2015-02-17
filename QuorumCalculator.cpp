@@ -68,7 +68,7 @@ int main(int argc, char* argv[]) {
 
     if(index > 0) {
         std::cout << "A total of " << index << " members qualify to vote." << std::endl;
-        std::cout << std::setw(28) << std::left << "Simple majority (51%)"     << ceil((float)index*.51) << " / " << index << std::endl;
+        std::cout << std::setw(28) << std::left << "Simple majority (.51)"     << ceil((float)index*.51) << " / " << index << std::endl;
         std::cout << std::setw(28) << std::left <<  "Two-thirds majority (2/3)" << ceil((float)index*(2/(float)3)) << " / " << index << std::endl;
     } else {
         std::cout << "No members qualify to vote." << std::endl;
