@@ -1,0 +1,1 @@
+Allows a club to input a CSV file and determine which of their members are currently considered voting members.
