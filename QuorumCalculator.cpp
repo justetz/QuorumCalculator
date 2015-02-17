@@ -102,7 +102,10 @@ void output_data(std::ostream& out, const STR_INT_MAP& attendance_record, int nu
         return;
     }
 
+    int simple_majority     = floor((float)count * (.50)) + 1;
+    int two_thirds_majority = ceil((float)count * (2.0/3.0));
+
     out << "A total of " << count << " members qualify to vote." << std::endl;
-    out << std::setw(28) << std::left << "Simple majority (.51)"     << ceil((float)count*.51) << " / " << count << std::endl;
-    out << std::setw(28) << std::left <<  "Two-thirds majority (2/3)" << ceil((float)count*(2/(float)3)) << " / " << count << std::endl;
+    out << std::setw(28) << std::left << "Simple majority (50% + 1)"      << simple_majority << " / " << count << std::endl;
+    out << std::setw(28) << std::left <<  "Two-thirds majority (2/3)" << two_thirds_majority << " / " << count << std::endl;
 }
